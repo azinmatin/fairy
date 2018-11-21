@@ -1,26 +1,9 @@
 # coding=utf-8
-import db_handler as dbh
-from user_page_crawler import User_Page_Crawler
-from user_crawler_db import UserCrawler
-import graph_embedding.pme.data_preparation as pmedp
-from crawl_graph_entities import Crawl_Graph_Entities
-from interaction_graph import Interaction_Graph
-from environment import Environment
 import Utils as util
-import logging
-from pymongo import MongoClient
 import time
-import argparse
-from ConfigParser import ConfigParser
-import os
-import sys
 from datetime import datetime
-import json
-import random
 import networkx as nx
 from networkx.readwrite.gml import literal_destringizer
-import numpy as np
-import urllib
 import pandas as pd
 
 
@@ -99,7 +82,7 @@ class Feature_Extractor:
         """
         Todo:
             compute:
-            * avg. users influence (np.followers/no.followees)
+            * avg. users influence (no.followers/no.followees)
             * avg. no. scrobbles
             * avg. no. artists the user has listened to
             * avg. no. tracks the user loves

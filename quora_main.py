@@ -1,24 +1,9 @@
 # coding=utf-8
-import logging
-from pymongo import MongoClient
 import time
-import argparse
-from ConfigParser import ConfigParser
-import os
-import sys
-from user_page_crawler import User_Page_Crawler
-from qa_crawler_db import QA_Crawler
-from crawl_graph_entities import Crawl_Graph_Entities
-from user_crawler_db import UserCrawler
-from taxonomy_crawler import TaxonomyCrawler
-from crawl_node_influence import User_Node_Influence
-from interaction_graph import Interaction_Graph
-import db_handler as dbh
 import itertools
 import networkx as nx
 import random
 import xlsxwriter
-import json
 from networkx.readwrite.gml import literal_destringizer
 from networkx.readwrite.gml import literal_stringizer
 
@@ -101,7 +86,7 @@ def get_path_explanation(path, path_pattern, graph):
 
 
 def write_explanations_to_file(user_rec_paths, path_prefix, current_time, file_name):
-    """ generates excel sheets of explanation pairs for evaluation """
+    """ generates excel sheets containing explanation pairs for evaluation """
     # open excel file
     if not os.path.exists(path_prefix + 'explanations/' + current_time):
         os.makedirs(path_prefix + 'explanations/' + current_time)
@@ -139,7 +124,7 @@ def write_explanations_to_file(user_rec_paths, path_prefix, current_time, file_n
             m = (l * (l-1)) / 2
             con_paths_new = list(con_paths)
 
-            # ------------------- transitive pairs -------------------------
+            # transitive pairs
             all_indices = [i for i in range(l)]
             if l == 2:
                 pairs = [(0, 1)]
@@ -240,30 +225,26 @@ def write_explanations_to_file(user_rec_paths, path_prefix, current_time, file_n
 
 
 if __name__ == '__main__':
-    try:
-        users = ['u1', 'u2', 'u3']  # evaluators
-        dates = ['d1', 'd2']
-        selected_feeds = {'u1': {'d1': ['f1'], 'd2': ['f2']},
-                          'u2': {'d1': ['f3'], 'd2': ['f4']},
-                          'u3': {'d1': ['f5'], 'd2': ['f6']}}
+    users = ['u1', 'u2', 'u3']  # evaluators
+    dates = ['d1', 'd2']
+    selected_feeds = {'u1': {'d1': ['f1'], 'd2': ['f2']},
+                      'u2': {'d1': ['f3'], 'd2': ['f4']},
+                      'u3': {'d1': ['f5'], 'd2': ['f6']}}
 
-        # -----------------------------generate explanations-------------------
-        user_feed_paths = {'u1': {'f1': [], 'f2': []},
-                           'u2': {'f3': [], 'f4': []},
-                           'u3': {'f5': [], 'f6': []}}
-        for user in users:
-            for date in dates:
-                file_path = ''  # path to user's interaction graph
-                g = nx.read_gml(file_path, destringizer=literal_destringizer)
-                for f in selected_feeds[user][date]:
-                    paths = nx.nx.shortest_simple_paths(g, source=user, target=f)
-                    for path in paths:
-                        path_pattern = ''   # should be the pattern of the path
-                        path_exp, path_str = get_path_explanation(path, path_pattern, g)
-                        path_info = (path_exp, path_str, ' '.join(path_pattern), path_id)
-                        user_feed_paths[user][f].append(path_info)
-                file_name = 'explanations.xlsx'
-                write_explanations_to_file(user_rec_paths, prefix_path, date, file_name)
+    user_feed_paths = {'u1': {'f1': [], 'f2': []},
+                       'u2': {'f3': [], 'f4': []},
+                       'u3': {'f5': [], 'f6': []}}
+    for user in users:
+        for date in dates:
+            file_path = ''  # path to user's interaction graph
+            g = nx.read_gml(file_path, destringizer=literal_destringizer)
+            for f in selected_feeds[user][date]:
+                paths = nx.nx.shortest_simple_paths(g, source=user, target=f)
+                for path in paths:
+                    path_pattern = ''   # should be the pattern of the path
+                    path_exp, path_str = get_path_explanation(path, path_pattern, g)
+                    path_info = (path_exp, path_str, ' '.join(path_pattern), path_id)
+                    user_feed_paths[user][f].append(path_info)
+            file_name = 'explanations.xlsx'
+            write_explanations_to_file(user_rec_paths, prefix_path, date, file_name)
 
-    except:
-        logging.info('', exc_info=1)

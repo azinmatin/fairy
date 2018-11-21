@@ -1,20 +1,9 @@
 # coding=utf-8
-import logging
-from pymongo import MongoClient
 import time
-import argparse
-from ConfigParser import ConfigParser
-import os
-import sys
 from datetime import datetime
-import json
-import random
 import networkx as nx
 import pandas as pd
-from scipy.spatial import distance
 from networkx.readwrite.gml import literal_destringizer
-import codecs
-import numpy as np
 import Utils as util
 
 
@@ -102,7 +91,7 @@ class Feature_Extractor:
         """
         Todo:
             compute:
-            * avg. users influence (np.followers/no.followees)
+            * avg. users influence (no.followers/no.followees)
             * avg. no. edits
             * avg. no. questions answered
             * avg. no. questions asked
